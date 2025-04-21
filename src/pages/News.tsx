@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Calendar, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,9 @@ import { Separator } from '@/components/ui/separator';
 const News = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Всі новини');
+  const [expandedNews, setExpandedNews] = useState<number | null>(null);
+
+  const newsRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const newsCategories = ['Всі новини', 'Клімат', 'Природа', 'Енергетика', 'Політика'];
 
@@ -28,56 +31,59 @@ const News = () => {
       date: '15 квітня 2025',
       category: 'Природа',
       image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07',
-      excerpt: 'Міністерство екології презентувало нову програму відновлення лісових масивів у Карпатському регіоні...'
+      content: `Міністерство екології презентувало нову програму відновлення лісових масивів у Карпатському регіоні. 
+      Програма передбачає висадку понад 2 мільйонів нових дерев до кінця 2025 року, а також залучення місцевих громад до процесу відновлення екосистем. Особлива увага приділяється збереженню унікальних видів флори та фауни, а також боротьбі з незаконною вирубкою лісу.`
     },
     {
       title: 'Україна збільшує площу природоохоронних зон',
       date: '10 квітня 2025',
       category: 'Природа',
       image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027',
-      excerpt: 'П\'ять нових національних парків буде створено протягом наступного року в рамках програми...'
+      content: `П'ять нових національних парків буде створено протягом наступного року в рамках програми розширення природоохоронних територій. Цей крок дозволить зберегти рідкісні види тварин і рослин, а також створити нові можливості для екотуризму. За словами міністра екології, загальна площа охоронних зон зросте на 10%.`
     },
     {
       title: 'Кількість сонячних електростанцій зросла на 30%',
       date: '2 квітня 2025',
       category: 'Енергетика',
       image: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9',
-      excerpt: 'За останній рік кількість сонячних електростанцій в Україні зросла на 30%. Це пов\'язано з...'
+      content: `За останній рік кількість сонячних електростанцій в Україні зросла на 30%. Це пов'язано з державною підтримкою зеленої енергетики та підвищенням обізнаності населення про переваги відновлюваних джерел енергії. Влада планує збільшувати частку сонячної енергетики в енергетичному балансі країни й надалі.`
     },
     {
       title: 'Міжнародна конференція з питань клімату в Києві',
       date: '28 березня 2025',
       category: 'Клімат',
       image: 'https://images.unsplash.com/photo-1615729947596-a598e5de0ab3',
-      excerpt: 'У Києві відбулася міжнародна конференція з питань змін клімату та адаптації. Участь взяли...'
+      content: `У Києві відбулася міжнародна конференція з питань змін клімату та адаптації. 
+      Участь взяли понад 200 експертів із різних країн. Основні теми: скорочення викидів CO2, відновлення лісів і адаптація сільського господарства до нових кліматичних умов. Підписано кілька партнерських угод щодо спільних досліджень.`
     },
     {
       title: 'Новий екологічний податок для підприємств',
       date: '20 березня 2025',
       category: 'Політика',
       image: 'https://images.unsplash.com/photo-1493962853295-0fd70327578a',
-      excerpt: 'Верховна Рада прийняла закон про новий екологічний податок для підприємств, які не дотримуються...'
+      content: `Верховна Рада прийняла закон про новий екологічний податок для підприємств, які не дотримуються вимог щодо охорони навколишнього середовища. Закон розроблено з метою стимулювання бізнесу до впровадження екологічних технологій. За порушення встановлених норм передбачено суворі штрафи.`
     },
     {
       title: 'Проєкт "Зелені міста України" стартував у п\'яти містах',
       date: '15 березня 2025',
       category: 'Природа',
       image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843',
-      excerpt: 'П\'ять міст України розпочали участь у проєкті "Зелені міста", який передбачає розбудову...'
+      content: `П'ять міст України розпочали участь у проєкті "Зелені міста", який передбачає розбудову парків, велодоріжок та збільшення кількості зелених зон. Проєкт має на меті покращити якість повітря, підвищити рівень комфорту та залучити мешканців до екологічних ініціатив.`
     },
     {
       title: 'Дослідження: як зміни клімату впливають на Чорне море',
       date: '5 березня 2025',
       category: 'Клімат',
       image: 'https://images.unsplash.com/photo-1439886183900-e79ec0057170',
-      excerpt: 'Нове дослідження українських вчених показало, як зміни клімату впливають на екосистему Чорного моря...'
+      content: `Нове дослідження українських вчених показало, як зміни клімату впливають на екосистему Чорного моря. Зареєстровано підвищення температури води і зменшення чисельності окремих видів риб. Автори дослідження радять посилити моніторинг та реалізувати комплексні заходи з адаптації.`
     },
     {
       title: 'Енергоефективність в Україні: огляд ситуації',
       date: '26 лютого 2025',
       category: 'Енергетика',
       image: 'https://images.unsplash.com/photo-1465379944081-7f47de8d74ac',
-      excerpt: 'Аналітичний огляд стану енергоефективності в Україні показав, що за останні 5 років країна...'
+      content: `Аналітичний огляд стану енергоефективності в Україні показав, що за останні 5 років країна значно просунулась у впровадженні енергозберігаючих технологій. 
+      Однак експерти вказують на необхідність подальшої модернізації житлового фонду та актуалізації державних програм.`
     }
   ];
 
@@ -89,8 +95,23 @@ const News = () => {
   // Фільтр пошуку
   const filteredNews = categoryFilter.filter(news =>
       news.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      news.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+      news.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleToggle = (index: number) => {
+    if (expandedNews === index) {
+      setExpandedNews(null);
+    } else {
+      setExpandedNews(index);
+
+      // Прокрутити до картки з новиною (з затримкою рендеру)
+      setTimeout(() => {
+        if (newsRefs.current[index]) {
+          newsRefs.current[index]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+  };
 
   return (
       <div className="min-h-screen pt-20">
@@ -167,7 +188,11 @@ const News = () => {
             {/* News Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredNews.map((news, index) => (
-                  <Card key={index} className="overflow-hidden hover-lift">
+                  <Card
+                      key={index}
+                      className="overflow-hidden hover-lift"
+                      ref={el => { newsRefs.current[index] = el; }}
+                  >
                     <div className="h-48 overflow-hidden">
                       <img
                           src={news.image}
@@ -186,11 +211,17 @@ const News = () => {
                       <CardTitle className="line-clamp-2">{news.title}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="line-clamp-3 text-muted-foreground">{news.excerpt}</p>
+                      <p className={expandedNews === index ? "mb-2 text-muted-foreground whitespace-pre-line" : "line-clamp-3 text-muted-foreground"}>
+                        {news.content}
+                      </p>
                     </CardContent>
                     <CardFooter>
-                      <Button variant="ghost" className="text-eco px-0 hover:bg-transparent hover:text-eco-dark">
-                        Читати далі
+                      <Button
+                          variant="ghost"
+                          className="text-eco px-0 hover:bg-transparent hover:text-eco-dark"
+                          onClick={() => handleToggle(index)}
+                      >
+                        {expandedNews === index ? 'Згорнути' : 'Читати далі'}
                       </Button>
                     </CardFooter>
                   </Card>
@@ -206,7 +237,7 @@ const News = () => {
                 </div>
             )}
 
-            {/* Pagination (можна доопрацювати пізніше) */}
+            {/* Pagination */}
             <div className="mt-12 flex justify-center">
               <div className="flex space-x-1">
                 <Button variant="outline" size="icon" disabled>
@@ -214,15 +245,6 @@ const News = () => {
                 </Button>
                 <Button variant="outline" size="icon" className="bg-eco text-white hover:bg-eco-dark">
                   1
-                </Button>
-                <Button variant="outline" size="icon">
-                  2
-                </Button>
-                <Button variant="outline" size="icon">
-                  3
-                </Button>
-                <Button variant="outline" size="icon">
-                  &gt;
                 </Button>
               </div>
             </div>
