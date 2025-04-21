@@ -246,6 +246,9 @@ const News = () => {
                 <Button variant="outline" size="icon" className="bg-eco text-white hover:bg-eco-dark">
                   1
                 </Button>
+                <Button variant="outline" size="icon">
+                  &gt;
+                </Button>
               </div>
             </div>
           </div>
