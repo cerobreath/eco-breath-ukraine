@@ -1,21 +1,31 @@
-
+// Імпорт React і хука useState для управління станом форми та калькулятора
 import React, { useState } from 'react';
+// Імпорт іконок із бібліотеки lucide-react для візуального оформлення
 import { 
-  Mail, Phone, MapPin, Send, Calculator, Github, Twitter, Facebook, Car, Home, ShoppingBag, Leaf
+  Mail, Phone, MapPin, Send, Calculator, Instagram, Twitter, Facebook, Car, Home, ShoppingBag, Leaf, AlertCircle
 } from 'lucide-react';
+// Імпорт компонента Button із бібліотеки shadcn-ui для створення кнопок
 import { Button } from '@/components/ui/button';
+// Імпорт компонентів Card із бібліотеки shadcn-ui для відображення інформації
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+// Імпорт компонентів Tabs із бібліотеки shadcn-ui для перемикання між формою та калькулятором
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// Імпорт компонента Input із бібліотеки shadcn-ui для полів введення
 import { Input } from '@/components/ui/input';
+// Імпорт компонента Textarea із бібліотеки shadcn-ui для текстового поля
 import { Textarea } from '@/components/ui/textarea';
+// Імпорт компонента Label із бібліотеки shadcn-ui для міток полів
 import { Label } from '@/components/ui/label';
+// Імпорт компонента Slider із бібліотеки shadcn-ui для калькулятора
 import { Slider } from '@/components/ui/slider';
+// Імпорт компонента Separator із бібліотеки shadcn-ui для роздільної лінії
 import { Separator } from '@/components/ui/separator';
-import { AlertCircle } from 'lucide-react';
+// Імпорт компонентів Alert із бібліотеки shadcn-ui для відображення повідомлень
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
+// Визначення компонента Contact для відображення сторінки контактів
 const Contact = () => {
-  // Contact form state
+  // Створення стану formState для зберігання даних форми зворотного зв’язку
   const [formState, setFormState] = useState({
     name: '',
     email: '',
@@ -23,36 +33,97 @@ const Contact = () => {
     message: '',
   });
   
+  // Створення стану formStatus для відстеження статусу відправлення форми
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  
+  // Створення стану formErrors для зберігання помилок валідації форми
+  const [formErrors, setFormErrors] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
 
-  // Carbon calculator state
-  const [carbonData, setcarbonData] = useState({
+  // Створення стану carbonData для зберігання даних калькулятора вуглецевого сліду
+  const [carbonData, setCarbonData] = useState({
     transportation: 5,
     housing: 5,
     food: 5,
     goods: 5
   });
   
+  // Створення стану carbonResult для зберігання результату калькулятора
   const [carbonResult, setCarbonResult] = useState<number | null>(null);
 
-  // Handle form input changes
+  // Функція для валідації форми перед відправленням
+  const validateForm = () => {
+    const errors = {
+      name: '',
+      email: '',
+      subject: '',
+      message: '',
+    };
+    let isValid = true;
+
+    // Перевірка обов’язковості поля name
+    if (!formState.name.trim()) {
+      errors.name = 'Ім’я та прізвище є обов’язковими';
+      isValid = false;
+    }
+
+    // Перевірка обов’язковості та формату email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formState.email.trim()) {
+      errors.email = 'Email є обов’язковим';
+      isValid = false;
+    } else if (!emailRegex.test(formState.email)) {
+      errors.email = 'Введіть коректний email';
+      isValid = false;
+    }
+
+    // Перевірка обов’язковості поля subject
+    if (!formState.subject.trim()) {
+      errors.subject = 'Тема є обов’язковою';
+      isValid = false;
+    }
+
+    // Перевірка обов’язковості поля message
+    if (!formState.message.trim()) {
+      errors.message = 'Повідомлення є обов’язковим';
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+    return isValid;
+  };
+
+  // Обробка змін у полях форми
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormState(prev => ({ ...prev, [name]: value }));
+    // Очищення помилки для поля при зміні його значення
+    setFormErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  // Handle form submission
+  // Обробка відправлення форми
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would send the form data to a server
+    
+    // Перевірка валідації форми
+    if (!validateForm()) {
+      setFormStatus('error');
+      return;
+    }
+
+    // Імітація відправлення даних на сервер
     console.log('Form submitted:', formState);
     
-    // Simulate form submission
+    // Імітація асинхронного відправлення
     setTimeout(() => {
-      // Simulate successful submission
+      // Успішне відправлення
       setFormStatus('success');
       
-      // Reset form after submission
+      // Скидання форми після відправлення
       setFormState({
         name: '',
         email: '',
@@ -60,48 +131,64 @@ const Contact = () => {
         message: '',
       });
       
-      // Reset form status after a delay
+      // Скидання помилок
+      setFormErrors({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+      });
+      
+      // Скидання статусу форми після затримки
       setTimeout(() => {
         setFormStatus('idle');
       }, 5000);
     }, 1000);
   };
 
-  // Handle carbon slider changes
+  // Обробка змін у слайдерах калькулятора
   const handleSliderChange = (name: keyof typeof carbonData, value: number[]) => {
-    setcarbonData(prev => ({ ...prev, [name]: value[0] }));
+    setCarbonData(prev => ({ ...prev, [name]: value[0] }));
   };
 
-  // Calculate carbon footprint
+  // Розрахунок вуглецевого сліду
   const calculateCarbonFootprint = () => {
-    // Simple calculation for demonstration
-    // In a real app, you would use more complex calculations based on scientific models
+    // Проста формула для демонстрації
     const { transportation, housing, food, goods } = carbonData;
     const result = (transportation * 0.5) + (housing * 0.3) + (food * 0.2) + (goods * 0.1);
     setCarbonResult(parseFloat(result.toFixed(2)));
   };
 
+  // Рендеринг сторінки контактів із секціями
   return (
     <div className="min-h-screen pt-20">
-      {/* Hero Section */}
+      {/* Секція Hero */}
       <section className="py-12 bg-eco-light">
+        {/* Контейнер для контенту */}
         <div className="container px-4 mx-auto">
+          {/* Текст у центрі */}
           <div className="max-w-3xl mx-auto text-center">
+            {/* Заголовок секції */}
             <h1 className="text-4xl font-bold mb-4">Зв'яжіться з нами</h1>
+            {/* Опис секції */}
             <p className="text-lg text-muted-foreground">
               Маєте питання, пропозиції або бажаєте долучитися до наших ініціатив? 
-              Зв'яжіться з нами, і ми з радістю вам допоможемо.
+              Зв'яжемося з вами, і ми з радістю вам допоможемо.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Contact Information */}
+      {/* Секція контактної інформації */}
       <section className="py-12">
+        {/* Контейнер для контенту */}
         <div className="container px-4 mx-auto">
+          {/* Сітка для карток контактної інформації */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Картка з email */}
             <Card className="hover-lift">
               <CardHeader className="text-center">
+                {/* Іконка email */}
                 <div className="mx-auto bg-eco/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4">
                   <Mail className="h-6 w-6 text-eco" />
                 </div>
@@ -113,8 +200,10 @@ const Contact = () => {
               </CardContent>
             </Card>
 
+            {/* Картка з телефоном */}
             <Card className="hover-lift">
               <CardHeader className="text-center">
+                {/* Іконка телефону */}
                 <div className="mx-auto bg-eco/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4">
                   <Phone className="h-6 w-6 text-eco" />
                 </div>
@@ -126,8 +215,10 @@ const Contact = () => {
               </CardContent>
             </Card>
 
+            {/* Картка з адресою */}
             <Card className="hover-lift">
               <CardHeader className="text-center">
+                {/* Іконка адреси */}
                 <div className="mx-auto bg-eco/10 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4">
                   <MapPin className="h-6 w-6 text-eco" />
                 </div>
@@ -142,17 +233,20 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Contact Tabs (Form and Carbon Calculator) */}
+      {/* Секція з вкладками (форма та калькулятор) */}
       <section className="py-12 bg-muted">
+        {/* Контейнер для контенту */}
         <div className="container px-4 mx-auto">
+          {/* Вкладки в центрі */}
           <div className="max-w-4xl mx-auto">
             <Tabs defaultValue="contact-form">
+              {/* Список вкладок */}
               <TabsList className="grid w-full grid-cols-2 mb-8">
                 <TabsTrigger value="contact-form">Зворотній зв'язок</TabsTrigger>
                 <TabsTrigger value="carbon-calculator">Калькулятор вуглецевого сліду</TabsTrigger>
               </TabsList>
               
-              {/* Contact Form */}
+              {/* Вміст вкладки форми */}
               <TabsContent value="contact-form">
                 <Card>
                   <CardHeader>
@@ -162,6 +256,7 @@ const Contact = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
+                    {/* Повідомлення про успішне відправлення */}
                     {formStatus === 'success' && (
                       <Alert className="mb-6 bg-green-50 text-green-800 border-green-200">
                         <Leaf className="h-4 w-4" />
@@ -172,18 +267,21 @@ const Contact = () => {
                       </Alert>
                     )}
                     
+                    {/* Повідомлення про помилку валідації */}
                     {formStatus === 'error' && (
                       <Alert variant="destructive" className="mb-6">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Помилка</AlertTitle>
                         <AlertDescription>
-                          Під час надсилання повідомлення сталася помилка. Будь ласка, спробуйте ще раз.
+                          Будь ласка, заповніть усі поля коректно перед відправленням.
                         </AlertDescription>
                       </Alert>
                     )}
                     
+                    {/* Форма зворотного зв’язку */}
                     <form onSubmit={handleSubmit} className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Поле для імені */}
                         <div className="space-y-2">
                           <Label htmlFor="name">Ім'я та прізвище</Label>
                           <Input
@@ -194,8 +292,12 @@ const Contact = () => {
                             placeholder="Введіть ваше ім'я"
                             required
                           />
+                          {formErrors.name && (
+                            <p className="text-sm text-destructive">{formErrors.name}</p>
+                          )}
                         </div>
                         
+                        {/* Поле для email */}
                         <div className="space-y-2">
                           <Label htmlFor="email">Email</Label>
                           <Input
@@ -207,9 +309,13 @@ const Contact = () => {
                             placeholder="Введіть ваш email"
                             required
                           />
+                          {formErrors.email && (
+                            <p className="text-sm text-destructive">{formErrors.email}</p>
+                          )}
                         </div>
                       </div>
                       
+                      {/* Поле для теми */}
                       <div className="space-y-2">
                         <Label htmlFor="subject">Тема</Label>
                         <Input
@@ -220,8 +326,12 @@ const Contact = () => {
                           placeholder="Тема повідомлення"
                           required
                         />
+                        {formErrors.subject && (
+                          <p className="text-sm text-destructive">{formErrors.subject}</p>
+                        )}
                       </div>
                       
+                      {/* Поле для повідомлення */}
                       <div className="space-y-2">
                         <Label htmlFor="message">Повідомлення</Label>
                         <Textarea
@@ -233,10 +343,14 @@ const Contact = () => {
                           rows={6}
                           required
                         />
+                        {formErrors.message && (
+                          <p className="text-sm text-destructive">{formErrors.message}</p>
+                        )}
                       </div>
                     </form>
                   </CardContent>
                   <CardFooter>
+                    {/* Кнопка відправлення форми */}
                     <Button type="submit" onClick={handleSubmit} className="w-full bg-eco hover:bg-eco-dark">
                       Надіслати повідомлення <Send className="ml-2 h-4 w-4" />
                     </Button>
@@ -244,7 +358,7 @@ const Contact = () => {
                 </Card>
               </TabsContent>
               
-              {/* Carbon Calculator */}
+              {/* Вміст вкладки калькулятора */}
               <TabsContent value="carbon-calculator">
                 <Card>
                   <CardHeader>
@@ -255,6 +369,7 @@ const Contact = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-8">
+                      {/* Слайдер для транспорту */}
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
@@ -274,6 +389,7 @@ const Contact = () => {
                         </p>
                       </div>
                       
+                      {/* Слайдер для житла */}
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
@@ -293,6 +409,7 @@ const Contact = () => {
                         </p>
                       </div>
                       
+                      {/* Слайдер для харчування */}
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
@@ -312,6 +429,7 @@ const Contact = () => {
                         </p>
                       </div>
                       
+                      {/* Слайдер для товарів */}
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
@@ -332,6 +450,7 @@ const Contact = () => {
                       </div>
                     </div>
                     
+                    {/* Результат калькулятора */}
                     {carbonResult !== null && (
                       <div className="mt-8 p-4 bg-eco/10 rounded-lg">
                         <h3 className="text-lg font-medium mb-2">Результат</h3>
@@ -353,6 +472,7 @@ const Contact = () => {
                     )}
                   </CardContent>
                   <CardFooter>
+                    {/* Кнопка для розрахунку вуглецевого сліду */}
                     <Button onClick={calculateCarbonFootprint} className="w-full bg-eco hover:bg-eco-dark">
                       Розрахувати вуглецевий слід <Calculator className="ml-2 h-4 w-4" />
                     </Button>
@@ -364,15 +484,18 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Social Media Section */}
+      {/* Секція соціальних мереж */}
       <section className="py-12">
+        {/* Контейнер для контенту */}
         <div className="container px-4 mx-auto">
+          {/* Текст і посилання в центрі */}
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-2xl font-bold mb-6">Слідкуйте за нами</h2>
             <p className="text-muted-foreground mb-8">
               Приєднуйтесь до нашої спільноти в соціальних мережах, щоб бути в курсі останніх новин та подій.
             </p>
             
+            {/* Посилання на соціальні мережі */}
             <div className="flex justify-center space-x-6">
               <a href="#" className="bg-eco/10 p-4 rounded-full hover:bg-eco/20 transition-colors">
                 <Facebook className="h-6 w-6 text-eco" />
@@ -381,7 +504,7 @@ const Contact = () => {
                 <Twitter className="h-6 w-6 text-eco" />
               </a>
               <a href="#" className="bg-eco/10 p-4 rounded-full hover:bg-eco/20 transition-colors">
-                <Github className="h-6 w-6 text-eco" />
+                <Instagram className="h-6 w-6 text-eco" />
               </a>
             </div>
           </div>
@@ -391,4 +514,5 @@ const Contact = () => {
   );
 };
 
+// Експорт компонента Contact для використання в App.tsx через маршрутизацію
 export default Contact;
